@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Rekap Petshop</title>
+    <title>Cilegon Petshop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -74,7 +74,7 @@
         <aside class="w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col h-full z-10">
             <div class="p-6 border-b flex items-center gap-3">
                 <i class="fa-solid fa-paw text-primary text-2xl"></i>
-                <span class="text-xl font-bold text-gray-800">PetSystem</span>
+                <span class="text-xl font-bold text-gray-800">Cilegon Petshop</span>
             </div>
             <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
                 <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-2 px-2">Master Data</div>
@@ -495,7 +495,7 @@
         // ==========================================
         // KONFIGURASI GOOGLE APPS SCRIPT URL DISINI
         // ==========================================
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzJJEmKFmQyJPbrCeyL5ge4lwm0G7tP2UfV9eJXTtPwG8DusxLrRhEBy4mk7t9qaWG1/exec'; 
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7HVxtsiopHnLPUMChDhOILt4YJK8JdK8uh2ma86TBJazX7F_JmYsIMFBunbE_rqgO/exec'; 
 
         // --- STATE & DATA ---
         let appData = { users: [], produk: [], penjualan: [], stok: [], pengeluaran: [] };
@@ -516,14 +516,15 @@
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: action, data: data })
+                    body: JSON.stringify({ action: action, data: data }),
+                    redirect: 'follow'
                 });
                 const result = await response.json();
                 if(result.status === 'error') throw new Error(result.message);
                 return result.data;
             } catch (error) {
-                console.error("Error connecting to GAS:", error);
-                alert("Terjadi kesalahan! Pastikan URL Google Apps Script benar. Error: " + error.message);
+                console.error("Fetch Error:", error);
+                alert("Gagal terhubung ke Database.\n\nPASTIKAN:\n1. Di pengaturan Deploy Google Script, 'Who has access' (Siapa yang memiliki akses) diset ke 'Anyone' (Siapa saja).\n2. Buat 'New Deployment' setelah mengubah setting.\n3. Jangan pakai 'Anyone with Google Account'.");
                 return null;
             }
         }
@@ -579,7 +580,6 @@
             document.getElementById('stok-tanggal').valueAsDate = new Date();
             document.getElementById('keluar-tanggal').valueAsDate = new Date();
             
-            // Jika masuk via bypass tapi URL sudah disetel, tetap coba muat data
             if(GAS_URL !== 'ISI_DENGAN_URL_WEB_APP_ANDA_DISINI') {
                 await loadData();
             } else {
@@ -748,17 +748,17 @@
                 hargaJual: parseFloat(document.getElementById('prod-jual').value)
             };
             const fotoBase64 = document.getElementById('prod-foto-base64').value;
-            if(fotoBase64) data.fotoBase64 = fotoBase64; // Akan diurus backend
+            if(fotoBase64) data.fotoBase64 = fotoBase64; 
             else if (isUpdate) {
                 const existing = appData.produk.find(x => x.id === id);
-                if(existing && existing.foto) data.foto = existing.foto; // keep old
+                if(existing && existing.foto) data.foto = existing.foto; 
             }
 
             showLoading(fotoBase64 ? 'Mengupload Gambar & Menyimpan...' : 'Menyimpan Produk...');
             const res = await fetchGAS(isUpdate ? 'UPDATE_PRODUK' : 'ADD_PRODUK', data);
             
             if(res) {
-                await loadData(); // Reload all to get the Drive URL properly synced
+                await loadData();
                 closeModal('modal-produk');
                 showToast('Produk Tersimpan!');
             }
