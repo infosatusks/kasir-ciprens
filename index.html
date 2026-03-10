@@ -12,7 +12,7 @@
             theme: { 
                 extend: { 
                     colors: { 
-                        primary: '#d90429', /* Red theme based on image */
+                        primary: '#d90429', 
                         primaryDark: '#9b2226', 
                         primaryLight: '#ef233c', 
                         accent: '#2b2d42',
@@ -33,22 +33,25 @@
         .toast-slide-up { animation: slideUp 0.3s ease-out forwards; }
         @keyframes slideUp { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         
-        /* CSS Print Setup */
-        @media print { 
-            body { background: white !important; }
-            #sidebar, .global-header, button, .no-print { display: none !important; } 
-            #mainApp, main, .view-section, .bg-white { display: block !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: auto !important; overflow: visible !important; }
-            table { width: 100% !important; border-collapse: collapse; }
-            th, td { border: 1px solid #ddd; padding: 8px; font-size: 12px; }
-            
-            #print-area.active { display: block !important; position: absolute; left: 0; top: 0; width: 100%; max-width: 80mm; font-size: 12px; margin: 0; padding: 10px; background: white; z-index: 9999; }
-            #print-area.active table th, #print-area.active table td { border: none; padding: 2px 0; }
-            #print-area.active ~ * { display: none !important; }
+        /* CSS Print Struk Kasir */
+        @media print {
+            body.print-struk-mode * { visibility: hidden; }
+            body.print-struk-mode #print-area, body.print-struk-mode #print-area * { visibility: visible; }
+            body.print-struk-mode #print-area { position: absolute; left: 0; top: 0; width: 100%; max-width: 80mm; font-size: 12px; margin: 0; padding: 10px; background: white; z-index: 9999; }
+            body.print-struk-mode #print-area table th, body.print-struk-mode #print-area table td { border: none; padding: 2px 0; }
+        }
+
+        /* CSS Print Ringkasan Penjualan */
+        @media print {
+            body.print-summary-mode * { visibility: hidden; }
+            body.print-summary-mode #view-ringkasanPenjualan, body.print-summary-mode #view-ringkasanPenjualan * { visibility: visible; }
+            body.print-summary-mode #view-ringkasanPenjualan { position: absolute; left: 0; top: 0; width: 100%; }
+            body.print-summary-mode .no-print { display: none !important; }
         }
         
         .scroll-hidden::-webkit-scrollbar { display: none; }
         .menu-collapsible { overflow: hidden; transition: max-height 0.3s ease-out; max-height: 0; }
-        .menu-collapsible.open { max-height: 500px; }
+        .menu-collapsible.open { max-height: 800px; }
         
         /* Custom UI fixes */
         .login-bg { background: linear-gradient(135deg, #f8f9fa 50%, #ffe5e5 50%); }
@@ -92,8 +95,8 @@
                         <label class="flex items-center text-gray-600 cursor-pointer"><input type="checkbox" class="mr-2 rounded text-primary focus:ring-primary h-4 w-4"> Remember Me</label>
                         <a href="#" class="text-gray-500 hover:text-primary transition">Forgot Password?</a>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-4 items-center">
-                        <button type="submit" class="w-full sm:w-1/2 bg-primary hover:bg-primaryDark text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-md shadow-red-200">Sign In</button>
+                    <div class="flex flex-col gap-4">
+                        <button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-md shadow-red-200">Sign In</button>
                     </div>
                 </form>
             </div>
@@ -103,8 +106,8 @@
     <!-- MAIN APP SCREEN -->
     <div id="mainApp" class="hidden h-screen flex overflow-hidden">
         
-        <!-- Sidebar Absolute on Mobile, Relative on Desktop -->
-        <aside id="sidebar" class="bg-white w-72 h-full shadow-[4px_0_24px_rgba(0,0,0,0.05)] flex-shrink-0 transition-transform duration-300 transform -translate-x-full fixed md:relative md:translate-x-0 z-50 flex flex-col border-r border-gray-100">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-white w-72 h-full shadow-[4px_0_24px_rgba(0,0,0,0.05)] flex-shrink-0 transition-transform duration-300 transform -translate-x-full fixed md:relative md:translate-x-0 md:flex z-50 flex flex-col border-r border-gray-100">
             <!-- Header Profile -->
             <div class="p-6 relative border-b border-gray-100 bg-white">
                 <button onclick="toggleSidebar()" class="md:hidden absolute top-6 right-4 text-gray-500 text-xl"><i class="fas fa-times"></i></button>
@@ -120,20 +123,6 @@
                     <a href="#" onclick="nav('dashboard')" id="menu-dashboard" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-50 hover:text-primary transition menu-item group">
                         <i class="fas fa-chart-line w-8 text-center text-gray-400 group-hover:text-primary transition"></i> Dashboard
                     </a>
-                    
-                    <div id="menuAdminOnly">
-                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-4 mb-2 px-4">Master Data</div>
-                        <a href="#" onclick="nav('users')" id="menu-users" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-50 hover:text-primary transition menu-item group">
-                            <i class="fas fa-users-cog w-8 text-center text-gray-400 group-hover:text-primary transition"></i> User Management
-                        </a>
-                        <a href="#" onclick="nav('products')" id="menu-products" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-50 hover:text-primary transition menu-item group">
-                            <i class="fas fa-box w-8 text-center text-gray-400 group-hover:text-primary transition"></i> Product List
-                        </a>
-                        <!-- New Customer Menu Mockup -->
-                        <a href="#" onclick="nav('customers')" id="menu-customers" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-50 hover:text-primary transition menu-item group">
-                            <i class="fas fa-user-friends w-8 text-center text-gray-400 group-hover:text-primary transition"></i> Data Pelanggan
-                        </a>
-                    </div>
 
                     <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-4 mb-2 px-4">Transaction</div>
                     <a href="#" onclick="nav('pos')" id="menu-pos" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-50 hover:text-primary transition menu-item group">
@@ -150,14 +139,25 @@
                     <a href="#" onclick="nav('laporanMenu')" id="menu-laporanMenu" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-50 hover:text-primary transition menu-item group">
                         <i class="fas fa-file-invoice w-8 text-center text-gray-400 group-hover:text-primary transition"></i> Report Management
                     </a>
+
+                    <!-- SETTINGS DROPDOWN (Master Data dipindah kesini) -->
+                    <div id="menuAdminOnly">
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-4 mb-2 px-4">System</div>
+                        <button onclick="toggleMenu('menuSettings', this)" class="w-full flex justify-between items-center px-4 py-3 rounded-xl hover:bg-red-50 transition group">
+                            <div class="flex items-center"><i class="fas fa-cog w-8 text-center text-gray-400 group-hover:text-primary transition"></i> Settings</div>
+                            <i class="fas fa-chevron-down text-xs text-gray-400 chevron transition-transform"></i>
+                        </button>
+                        <div id="menuSettings" class="menu-collapsible pl-10 space-y-1">
+                            <a href="#" onclick="nav('users')" id="menu-users" class="block py-2 text-sm text-gray-600 hover:text-primary menu-item">User Management</a>
+                            <a href="#" onclick="nav('products')" id="menu-products" class="block py-2 text-sm text-gray-600 hover:text-primary menu-item">Product List</a>
+                            <a href="#" onclick="nav('customers')" id="menu-customers" class="block py-2 text-sm text-gray-600 hover:text-primary menu-item">Data Pelanggan</a>
+                        </div>
+                    </div>
                 </nav>
             </div>
             
-            <!-- Bottom Settings & Logout -->
+            <!-- Bottom Logout -->
             <div class="p-4 border-t border-gray-100">
-                <a href="#" onclick="toast('Fitur pengaturan belum tersedia', false)" class="flex items-center px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-600 transition mb-1">
-                    <i class="fas fa-cog w-8 text-center"></i> Settings
-                </a>
                 <a href="#" onclick="logout()" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-red-600 transition font-bold">
                     <i class="fas fa-sign-out-alt w-8 text-center"></i> Logout
                 </a>
@@ -173,7 +173,8 @@
             <!-- Global Header -->
             <header class="bg-white shadow-sm h-16 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 border-b border-gray-100">
                 <div class="flex items-center">
-                    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-primary text-xl mr-4 md:hidden focus:outline-none"><i class="fas fa-bars"></i></button>
+                    <!-- Hamburger visible on mobile & desktop -->
+                    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-primary text-xl mr-4 focus:outline-none"><i class="fas fa-bars"></i></button>
                     <h2 id="globalTitle" class="text-xl font-bold text-gray-800">Dashboard</h2>
                 </div>
                 <div class="flex items-center gap-4">
@@ -188,26 +189,30 @@
             <!-- Content Container -->
             <main class="flex-1 overflow-y-auto">
                 
-                <!-- VIEW: DASHBOARD (REDESIGN SESUAI GAMBAR) -->
+                <!-- VIEW: DASHBOARD -->
                 <div id="view-dashboard" class="view-section hidden p-4 lg:p-6 space-y-6">
                     
-                    <!-- Top Summary Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Filters -->
+                    <div class="flex flex-col md:flex-row gap-4 mb-2">
+                        <div class="bg-white border rounded-lg px-3 py-2 flex items-center text-gray-600 md:w-64 w-full shadow-sm">
+                            <i class="far fa-calendar-alt mr-2"></i>
+                            <input type="date" id="dashDate" class="outline-none text-sm w-full bg-transparent" onchange="loadDashboard()">
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-between">
-                            <div><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Transaksi</p><h3 id="dashTotalInv" class="text-2xl font-black text-gray-800">0</h3></div>
-                            <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-receipt"></i></div>
+                            <div><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Transaksi</p><h3 id="dashTotalInv" class="text-3xl font-black text-gray-800">0</h3></div>
+                            <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-2xl"><i class="fas fa-receipt"></i></div>
                         </div>
                         <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-between">
-                            <div><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Pendapatan</p><h3 id="dashTotalRev" class="text-xl font-black text-gray-800">Rp 0</h3></div>
-                            <div class="w-12 h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-xl"><i class="fas fa-wallet"></i></div>
+                            <div><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Pendapatan</p><h3 id="dashTotalRev" class="text-2xl font-black text-gray-800">Rp 0</h3></div>
+                            <div class="w-14 h-14 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-2xl"><i class="fas fa-wallet"></i></div>
                         </div>
                         <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-between">
-                            <div><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Keuntungan</p><h3 id="dashTotalProfit" class="text-xl font-black text-primary">Rp 0</h3></div>
-                            <div class="w-12 h-12 rounded-full bg-red-50 text-primary flex items-center justify-center text-xl"><i class="fas fa-hand-holding-usd"></i></div>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-between">
-                            <div><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Filter Tanggal</p><input type="date" id="dashDate" class="text-sm font-bold text-gray-800 outline-none border-b border-gray-200 bg-transparent" onchange="loadDashboard()"></div>
-                            <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-xl"><i class="far fa-calendar-alt"></i></div>
+                            <div><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Keuntungan</p><h3 id="dashTotalProfit" class="text-2xl font-black text-primary">Rp 0</h3></div>
+                            <div class="w-14 h-14 rounded-full bg-red-50 text-primary flex items-center justify-center text-2xl"><i class="fas fa-hand-holding-usd"></i></div>
                         </div>
                     </div>
 
@@ -241,7 +246,7 @@
                     </div>
                 </div>
 
-                <!-- VIEW: CUSTOMERS (NEW) -->
+                <!-- VIEW: CUSTOMERS -->
                 <div id="view-customers" class="view-section hidden p-4 lg:p-6">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                         <div class="flex justify-between items-center mb-6">
@@ -256,11 +261,10 @@
                     </div>
                 </div>
 
-                <!-- VIEW: POS (REDESIGN) -->
+                <!-- VIEW: POS -->
                 <div id="view-pos" class="view-section hidden p-2 md:p-4 lg:p-6 min-h-[calc(100vh-64px)]">
                     <div class="flex flex-col lg:flex-row gap-4 h-full">
-                        
-                        <!-- Left Panel: Product List & Scanner -->
+                        <!-- Left Panel -->
                         <div class="lg:w-2/3 flex flex-col gap-4">
                             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                                 <div class="flex flex-col md:flex-row gap-3">
@@ -292,7 +296,7 @@
                             </div>
                         </div>
 
-                        <!-- Right Panel: Cart & Checkout (Red Accent) -->
+                        <!-- Right Panel -->
                         <div class="lg:w-1/3 bg-white rounded-2xl shadow-lg border border-gray-100 flex flex-col overflow-hidden h-full max-h-screen lg:max-h-[calc(100vh-100px)] lg:sticky lg:top-4">
                             <div class="p-5 border-b border-gray-100 bg-gray-50">
                                 <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2"><i class="fas fa-shopping-cart text-primary"></i> Order Details</h3>
@@ -328,7 +332,6 @@
                                 </div>
                             </div>
 
-                            <!-- Checkout Block -->
                             <div class="bg-primary p-6 text-white rounded-b-2xl mt-auto shadow-[0_-4px_10px_rgba(217,4,41,0.2)]">
                                 <div class="flex justify-between items-end mb-4">
                                     <span class="text-white/80 text-sm font-medium">Total Payable</span>
@@ -343,13 +346,16 @@
                     </div>
                 </div>
 
-                <!-- OTHERS (Users, Products, Stock In, Expense, RepSales, RepFinance) -->
+                <!-- USERS -->
                 <div id="view-users" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-lg font-bold">User Management</h3><button onclick="openUserModal()" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm"><i class="fas fa-plus mr-2"></i>Tambah User</button></div><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-gray-50 text-gray-500 border-b"><tr><th class="p-4 font-semibold">ID</th><th class="p-4 font-semibold">Username</th><th class="p-4 font-semibold">Role</th><th class="p-4 font-semibold text-center">Action</th></tr></thead><tbody id="userTableBody" class="divide-y divide-gray-100"></tbody></table></div></div></div>
 
+                <!-- PRODUCTS -->
                 <div id="view-products" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-lg font-bold">Product List</h3><button onclick="openProductModal()" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm"><i class="fas fa-plus mr-2"></i>Tambah Produk</button></div><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-gray-50 text-gray-500 border-b"><tr><th class="p-4 font-semibold">Image</th><th class="p-4 font-semibold">Product Name</th><th class="p-4 font-semibold">Category</th><th class="p-4 font-semibold">Stock</th><th class="p-4 font-semibold">Cost</th><th class="p-4 font-semibold">Price</th><th class="p-4 font-semibold text-center">Action</th></tr></thead><tbody id="productTableBody" class="divide-y divide-gray-100"></tbody></table></div></div></div>
 
+                <!-- STOCK IN -->
                 <div id="view-stockin" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-8 max-w-2xl mx-auto"><h3 class="text-xl font-black text-gray-800 mb-6 border-b pb-4">Form Tambah Stok</h3><form id="formStockIn" onsubmit="saveStockIn(event)" class="space-y-5"><div><label class="block text-sm font-bold text-gray-500 mb-1">Tanggal</label><input type="date" id="stkDate" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" required></div><div><label class="block text-sm font-bold text-gray-500 mb-1">Kategori</label><select id="stkCat" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" onchange="filterStkProducts()" required><option value="">Pilih Kategori...</option><option value="Makanan Kucing">Makanan Kucing</option><option value="Makanan Anjing">Makanan Anjing</option><option value="Perlengkapan Hewan">Perlengkapan Hewan</option><option value="Klinik dan Obat-obatan">Klinik dan Obat-obatan</option><option value="Aset">Aset</option></select></div><div><label class="block text-sm font-bold text-gray-500 mb-1">Produk</label><select id="stkProduct" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" required disabled><option value="">Pilih Produk...</option></select></div><div><label class="block text-sm font-bold text-gray-500 mb-1">Quantity (Stok Masuk)</label><input type="number" id="stkQty" min="1" placeholder="Masukkan jumlah" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" required></div><button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3 rounded-xl transition shadow-md mt-4">Simpan Stok</button></form></div></div>
                 
+                <!-- EXPENSE -->
                 <div id="view-expense" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-8 max-w-2xl mx-auto"><h3 class="text-xl font-black text-gray-800 mb-6 border-b pb-4">Form Pengeluaran</h3><form id="formExpense" onsubmit="saveExpense(event)" class="space-y-5"><div><label class="block text-sm font-bold text-gray-500 mb-1">Tanggal</label><input type="date" id="expDate" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" required></div><div><label class="block text-sm font-bold text-gray-500 mb-1">Kategori Biaya</label><select id="expCat" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" onchange="checkExpLainnya()" required><option value="Iklan">Iklan</option><option value="Belanja Modal">Belanja Modal</option><option value="Gaji">Gaji</option><option value="Listrik">Listrik</option><option value="Lainnya">Lainnya...</option></select><input type="text" id="expCatLainnya" placeholder="Ketik jenis pengeluaran spesifik..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mt-2 hidden outline-none focus:border-primary"></div><div><label class="block text-sm font-bold text-gray-500 mb-1">Vendor / Penerima</label><input type="text" id="expVendor" placeholder="Nama Vendor" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" required></div><div class="flex gap-4"><div class="w-1/3"><label class="block text-sm font-bold text-gray-500 mb-1">Qty</label><input type="number" id="expQty" min="1" value="1" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" oninput="calcExp()" required></div><div class="flex-1"><label class="block text-sm font-bold text-gray-500 mb-1">Nominal (Rp)</label><input type="number" id="expNominal" placeholder="Harga Satuan" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary" oninput="calcExp()" required></div></div><div><label class="block text-sm font-bold text-gray-500 mb-1">Total Biaya</label><input type="text" id="expTotal" class="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 font-bold text-lg text-primary outline-none" readonly></div><button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3 rounded-xl transition shadow-md mt-4">Simpan Pengeluaran</button></form></div></div>
                 
                 <!-- MENU LAPORAN -->
@@ -371,7 +377,8 @@
                     </div>
                 </div>
 
-                <div id="view-ringkasanPenjualan" class="view-section hidden bg-white min-h-full border-t">
+                <!-- RINGKASAN PENJUALAN -->
+                <div id="view-ringkasanPenjualan" class="view-section hidden bg-white min-h-full border-t relative">
                     <div class="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-50 border-b no-print gap-4">
                         <div class="flex items-center gap-3 w-full md:w-auto">
                             <button onclick="nav('laporanMenu')" class="text-gray-500 hover:text-primary p-2 bg-white rounded-lg border shadow-sm"><i class="fas fa-arrow-left"></i></button>
@@ -381,7 +388,8 @@
                             <div class="bg-white border rounded-lg px-3 py-1.5 flex items-center gap-2 text-sm shadow-sm flex-1 md:flex-none">
                                 <i class="far fa-calendar text-gray-400"></i><input type="date" id="sumDateStart" onchange="loadSalesSummary()" class="outline-none w-24 bg-transparent"><span class="text-gray-300">-</span><input type="date" id="sumDateEnd" onchange="loadSalesSummary()" class="outline-none w-24 bg-transparent">
                             </div>
-                            <button onclick="window.print()" class="bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm hover:bg-primaryDark"><i class="fas fa-print mr-1"></i> Print</button>
+                            <button onclick="exportSummaryCSV()" class="bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm hover:bg-green-700"><i class="fas fa-file-csv mr-1"></i> CSV</button>
+                            <button onclick="printSummary()" class="bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm hover:bg-primaryDark"><i class="fas fa-print mr-1"></i> Print</button>
                         </div>
                     </div>
                     <div class="p-4 lg:p-8 max-w-4xl mx-auto">
@@ -389,9 +397,11 @@
                     </div>
                 </div>
                 
-                <div id="view-repSales" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"><div class="flex items-center gap-3"><button onclick="nav('laporanMenu')" class="text-gray-500 md:hidden bg-gray-100 p-2 rounded"><i class="fas fa-arrow-left"></i></button><h3 class="text-lg font-bold">Data Penjualan</h3></div><div class="flex flex-wrap gap-2 w-full md:w-auto"><input type="date" id="filterSaleStart" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><input type="date" id="filterSaleEnd" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><button onclick="loadSales()" class="bg-accent hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm">Filter</button><button onclick="exportCSV('RepSales')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm"><i class="fas fa-file-csv"></i> CSV</button></div></div><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap" id="tableRepSales"><thead class="bg-gray-50 text-gray-500 border-b"><tr><th class="p-4 font-semibold">ID Inv</th><th class="p-4 font-semibold">Tgl</th><th class="p-4 font-semibold">Pembeli</th><th class="p-4 font-semibold">Total</th><th class="p-4 font-semibold">Diskon</th><th class="p-4 font-semibold">Bayar</th><th class="p-4 font-semibold text-center no-print">Aksi</th></tr></thead><tbody id="repSalesBody" class="divide-y divide-gray-100"></tbody></table></div></div></div>
+                <!-- REP SALES -->
+                <div id="view-repSales" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"><div class="flex items-center gap-3"><button onclick="nav('laporanMenu')" class="text-gray-500 bg-gray-100 p-2 rounded"><i class="fas fa-arrow-left"></i></button><h3 class="text-lg font-bold">Data Penjualan</h3></div><div class="flex flex-wrap gap-2 w-full md:w-auto"><input type="date" id="filterSaleStart" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><input type="date" id="filterSaleEnd" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><button onclick="loadSales()" class="bg-accent hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm">Filter</button><button onclick="exportCSV('RepSales')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm"><i class="fas fa-file-csv"></i> CSV</button></div></div><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap" id="tableRepSales"><thead class="bg-gray-50 text-gray-500 border-b"><tr><th class="p-4 font-semibold">ID Inv</th><th class="p-4 font-semibold">Tgl</th><th class="p-4 font-semibold">Pembeli</th><th class="p-4 font-semibold">Total</th><th class="p-4 font-semibold">Diskon</th><th class="p-4 font-semibold">Bayar</th><th class="p-4 font-semibold text-center no-print">Aksi</th></tr></thead><tbody id="repSalesBody" class="divide-y divide-gray-100"></tbody></table></div></div></div>
                 
-                <div id="view-repFinance" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"><div class="flex items-center gap-3"><button onclick="nav('laporanMenu')" class="text-gray-500 md:hidden bg-gray-100 p-2 rounded"><i class="fas fa-arrow-left"></i></button><h3 class="text-lg font-bold">Data Keuangan</h3></div><div class="flex flex-wrap gap-2 w-full md:w-auto"><input type="date" id="filterFinStart" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><input type="date" id="filterFinEnd" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><button onclick="loadFinance()" class="bg-accent hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm">Filter</button><button onclick="exportCSV('RepFinance')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm"><i class="fas fa-file-csv"></i> CSV</button></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"><div class="border rounded-xl p-5 bg-green-50"><p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pemasukan</p><h4 id="finIn" class="text-2xl font-black text-green-600">Rp 0</h4></div><div class="border rounded-xl p-5 bg-red-50"><p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pengeluaran</p><h4 id="finOut" class="text-2xl font-black text-red-600">Rp 0</h4></div><div class="border border-primary rounded-xl p-5 bg-white shadow-sm"><p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Laba Bersih</p><h4 id="finNet" class="text-2xl font-black text-primary">Rp 0</h4></div></div><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap" id="tableRepFinance"><thead class="bg-gray-50 text-gray-500 border-b"><tr><th class="p-4 font-semibold">Tgl</th><th class="p-4 font-semibold">Kategori Biaya</th><th class="p-4 font-semibold">Vendor</th><th class="p-4 font-semibold">Total (Rp)</th><th class="p-4 font-semibold text-center no-print">Aksi</th></tr></thead><tbody id="repFinBody" class="divide-y divide-gray-100"></tbody></table></div></div></div>
+                <!-- REP FINANCE -->
+                <div id="view-repFinance" class="view-section hidden p-4 lg:p-6"><div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"><div class="flex items-center gap-3"><button onclick="nav('laporanMenu')" class="text-gray-500 bg-gray-100 p-2 rounded"><i class="fas fa-arrow-left"></i></button><h3 class="text-lg font-bold">Data Keuangan</h3></div><div class="flex flex-wrap gap-2 w-full md:w-auto"><input type="date" id="filterFinStart" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><input type="date" id="filterFinEnd" class="border rounded-lg px-3 text-sm py-2 bg-gray-50"><button onclick="loadFinance()" class="bg-accent hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm">Filter</button><button onclick="exportCSV('RepFinance')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm"><i class="fas fa-file-csv"></i> CSV</button></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"><div class="border rounded-xl p-5 bg-green-50"><p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pemasukan</p><h4 id="finIn" class="text-2xl font-black text-green-600">Rp 0</h4></div><div class="border rounded-xl p-5 bg-red-50"><p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pengeluaran</p><h4 id="finOut" class="text-2xl font-black text-red-600">Rp 0</h4></div><div class="border border-primary rounded-xl p-5 bg-white shadow-sm"><p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Laba Bersih</p><h4 id="finNet" class="text-2xl font-black text-primary">Rp 0</h4></div></div><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap" id="tableRepFinance"><thead class="bg-gray-50 text-gray-500 border-b"><tr><th class="p-4 font-semibold">Tgl</th><th class="p-4 font-semibold">Kategori Biaya</th><th class="p-4 font-semibold">Vendor</th><th class="p-4 font-semibold">Total (Rp)</th><th class="p-4 font-semibold text-center no-print">Aksi</th></tr></thead><tbody id="repFinBody" class="divide-y divide-gray-100"></tbody></table></div></div></div>
 
             </main>
         </div>
@@ -407,8 +417,24 @@
     <!-- Scanner Modal -->
     <div id="modalScanner" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[60] p-4 backdrop-blur-md"><div class="bg-white rounded-2xl p-2 w-full max-w-sm relative shadow-2xl"><button onclick="closeScanner()" class="absolute -top-4 -right-4 bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:text-primary transition"><i class="fas fa-times text-xl"></i></button><div id="reader" width="100%" class="rounded-xl overflow-hidden"></div><p class="text-center text-sm font-medium text-gray-500 mt-2">Arahkan kamera ke Barcode/QR</p></div></div>
 
-    <!-- Print Area -->
-    <div id="print-area" class="hidden"><div style="text-align:center;border-bottom:2px dashed #000;padding-bottom:10px;"><h2 style="margin:0;font-size:18px;font-weight:900;">CILEGON PETSHOP</h2><p style="margin:0;font-size:10px;">Struk Pembelian</p></div><div id="print-details" style="font-size:11px;margin:10px 0;line-height:1.4;"></div><table style="width:100%;font-size:11px;border-bottom:2px dashed #000;border-top:2px dashed #000;margin-bottom:10px;padding:5px 0;"><thead><tr><th style="text-align:left;padding:3px 0;">Item</th><th style="text-align:center;padding:3px 0;">Qty</th><th style="text-align:right;padding:3px 0;">Total</th></tr></thead><tbody id="print-items"></tbody></table><div style="text-align:right;font-size:11px;line-height:1.5;"><p style="margin:0;">Subtotal: <span id="print-sub"></span></p><p style="margin:0;">Diskon: <span id="print-disc"></span></p><p style="font-weight:900;font-size:14px;margin-top:5px;">TOTAL: <span id="print-total"></span></p></div><div style="text-align:center;margin-top:20px;font-size:10px;font-style:italic;">Terima kasih atas kunjungan Anda!</div></div>
+    <!-- STRUK AREA (HIDDEN EXCEPT DURING PRINT RECEIPT) -->
+    <div id="print-area" class="hidden">
+        <div style="text-align:center;border-bottom:2px dashed #000;padding-bottom:10px;">
+            <h2 style="margin:0;font-size:18px;font-weight:900;">CILEGON PETSHOP</h2>
+            <p style="margin:0;font-size:10px;">Struk Pembelian</p>
+        </div>
+        <div id="print-details" style="font-size:11px;margin:10px 0;line-height:1.4;"></div>
+        <table style="width:100%;font-size:11px;border-bottom:2px dashed #000;border-top:2px dashed #000;margin-bottom:10px;padding:5px 0;">
+            <thead><tr><th style="text-align:left;padding:3px 0;">Item</th><th style="text-align:center;padding:3px 0;">Qty</th><th style="text-align:right;padding:3px 0;">Total</th></tr></thead>
+            <tbody id="print-items"></tbody>
+        </table>
+        <div style="text-align:right;font-size:11px;line-height:1.5;">
+            <p style="margin:0;">Subtotal: <span id="print-sub"></span></p>
+            <p style="margin:0;">Diskon: <span id="print-disc"></span></p>
+            <p style="font-weight:900;font-size:14px;margin-top:5px;">TOTAL: <span id="print-total"></span></p>
+        </div>
+        <div style="text-align:center;margin-top:20px;font-size:10px;font-style:italic;">Terima kasih atas kunjungan Anda!</div>
+    </div>
 
     <script>
         // CONFIG
@@ -417,6 +443,7 @@
         // STATE
         let currentUser = null; let allProducts = []; let posRows = 0; let html5QrcodeScanner = null; let activeScannerTarget = '';
         let charts = { main: null, doughnut: null, bar: null };
+        window.summaryData = []; // Store summary data for CSV export
 
         // UTILS
         const formatRp = (num) => 'Rp ' + parseInt(num||0).toLocaleString('id-ID');
@@ -479,17 +506,9 @@
             }
         }
 
-        function bypassLogin(u, p) { 
-            document.getElementById('username').value=u; document.getElementById('password').value=p; handleLogin(new Event('submit')); 
-        }
-
         async function handleLogin(e) {
             e?.preventDefault();
             const u = document.getElementById('username').value, p = document.getElementById('password').value;
-
-            if (u === 'ciprens00' && p === '00ciprens') { currentUser = { id: 'BYPASS-ADMIN', username: 'ciprens00', role: 'Admin' }; sessionStorage.setItem('cp_user', JSON.stringify(currentUser)); toast(`Berhasil masuk sebagai Admin!`); initApp(); return; }
-            if (u === 'ciprens01' && p === '01ciprens') { currentUser = { id: 'BYPASS-KASIR', username: 'ciprens01', role: 'Kasir' }; sessionStorage.setItem('cp_user', JSON.stringify(currentUser)); toast(`Berhasil masuk sebagai Kasir!`); initApp(); return; }
-
             const data = await api('login', { username: u, password: p });
             if (data) { currentUser = data; sessionStorage.setItem('cp_user', JSON.stringify(data)); toast(`Welcome, ${data.username}!`); initApp(); }
         }
@@ -497,8 +516,16 @@
         function logout() { sessionStorage.removeItem('cp_user'); location.reload(); }
 
         function toggleSidebar() { 
-            document.getElementById('sidebar').classList.toggle('-translate-x-full'); 
-            document.getElementById('sidebarOverlay').classList.toggle('hidden'); 
+            const sb = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth < 768) {
+                sb.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            } else {
+                if (sb.style.display === 'none') { sb.style.display = 'flex'; }
+                else { sb.style.display = 'none'; }
+            }
         }
         
         function toggleMenu(menuId, btn) {
@@ -564,7 +591,6 @@
         function initCharts(data) {
             const labelsLine = Array.from({length: 24}, (_, i) => ("0"+i).slice(-2) + ":00");
             
-            // 1. Main Line Chart (Pendapatan vs Keuntungan)
             const ctxMain = document.getElementById('chartMainLine').getContext('2d');
             if(charts.main) charts.main.destroy();
             charts.main = new Chart(ctxMain, {
@@ -579,7 +605,6 @@
                 options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, grid:{color:'#f3f4f6'} }, x: { grid:{display:false} } } }
             });
 
-            // 2. Doughnut Chart (Mockup Data since actual category logic needs detailed backend aggregation, we fake it visually based on products)
             const ctxDoughnut = document.getElementById('chartDoughnut').getContext('2d');
             if(charts.doughnut) charts.doughnut.destroy();
             charts.doughnut = new Chart(ctxDoughnut, {
@@ -591,7 +616,6 @@
                 options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels:{usePointStyle:true, boxWidth:8} } } }
             });
 
-            // 3. Bar Chart (Transaksi Count)
             const ctxBar = document.getElementById('chartBarTrx').getContext('2d');
             if(charts.bar) charts.bar.destroy();
             charts.bar = new Chart(ctxBar, {
@@ -620,14 +644,38 @@
         async function loadSalesSummary() {
             const data = await api('getSalesSummary', { startDate: document.getElementById('sumDateStart').value, endDate: document.getElementById('sumDateEnd').value });
             if(!data) return;
+            window.summaryData = data; // Store data for CSV export
             const container = document.getElementById('listSalesSummary');
             let html = '';
             data.forEach(item => {
                 const img = item.image ? item.image : 'https://ui-avatars.com/api/?name='+item.name.charAt(0)+'&background=f8f9fa&color=d90429';
-                html += `<div class="flex items-center py-4 bg-white hover:bg-gray-50 transition px-2"><img src="${img}" class="w-14 h-14 rounded-xl object-cover border border-gray-100 shadow-sm"><div class="ml-4 flex-1"><h4 class="font-bold text-gray-800 text-[15px] mb-1">${item.name}</h4><div class="flex gap-6 text-sm"><div><p class="text-gray-400 text-[11px] uppercase tracking-wide">Keuntungan</p><p class="font-semibold text-gray-700">${formatRp(item.profit)}</p></div><div><p class="text-gray-400 text-[11px] uppercase tracking-wide">Pendapatan</p><p class="font-semibold text-gray-700">${formatRp(item.revenue)}</p></div></div></div><div class="ml-2"><span class="border border-green-200 text-green-700 rounded-lg px-3 py-1 font-bold text-sm bg-green-50">${item.qty}</span></div></div>`;
+                html += `<div class="flex items-center py-4 bg-white hover:bg-gray-50 transition px-4"><img src="${img}" class="w-14 h-14 rounded-xl object-cover border border-gray-100 shadow-sm"><div class="ml-4 flex-1"><h4 class="font-bold text-gray-800 text-[15px] mb-1">${item.name}</h4><div class="flex gap-6 text-sm"><div><p class="text-gray-400 text-[11px] uppercase tracking-wide">Keuntungan</p><p class="font-semibold text-gray-700">${formatRp(item.profit)}</p></div><div><p class="text-gray-400 text-[11px] uppercase tracking-wide">Pendapatan</p><p class="font-semibold text-gray-700">${formatRp(item.revenue)}</p></div></div></div><div class="ml-2"><span class="border border-green-200 text-green-700 rounded-lg px-3 py-1 font-bold text-sm bg-green-50">${item.qty}</span></div></div>`;
             });
             if(data.length === 0) html = '<div class="p-8 text-center text-gray-400 font-medium border-2 border-dashed border-gray-100 rounded-2xl">Tidak ada penjualan pada rentang tanggal ini.</div>';
             container.innerHTML = html;
+        }
+
+        function printSummary() {
+            document.body.classList.add('print-summary-mode');
+            window.print();
+            document.body.classList.remove('print-summary-mode');
+        }
+
+        function exportSummaryCSV() {
+            if(!window.summaryData || window.summaryData.length === 0) return toast('Tidak ada data penjualan untuk diekspor', false);
+            let csv = "Nama Produk,Qty Terjual,Pendapatan,Keuntungan\n";
+            window.summaryData.forEach(i => {
+                csv += `"${i.name.replace(/"/g, '""')}",${i.qty},${i.revenue},${i.profit}\n`;
+            });
+            const csvFile = new Blob([csv], {type: "text/csv"});
+            const downloadLink = document.createElement("a");
+            downloadLink.download = `Ringkasan_Penjualan_${getToday()}.csv`;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            toast('CSV Ringkasan berhasil diunduh');
         }
 
         // SCANNER
@@ -686,7 +734,15 @@
             document.querySelectorAll('#posTableBody tr').forEach(tr=>{ const sel=tr.querySelector('.pos-select'); if(sel.value){ const q=parseInt(tr.querySelector('.pos-qty').value), s=parseInt(sel.options[sel.selectedIndex].dataset.stock); if(q>s)err=`Stok kurang!`; itm.push({productId:sel.value,productName:sel.options[sel.selectedIndex].text.split(' (')[0],qty:q,capitalPrice:sel.options[sel.selectedIndex].dataset.cap,price:tr.querySelector('.pos-price').value,subtotal:tr.querySelector('.pos-sub').value}); }});
             if(err)return toast(err,false); if(itm.length===0)return toast('Keranjang kosong',false);
             const py={date:document.getElementById('posDate').value,buyer:document.getElementById('posBuyer').value||'Walk-in Customer',totalNominal:document.getElementById('posTotalNominal').innerText.replace(/\D/g,''),discount:document.getElementById('posDiscount').value,cashier:currentUser.username,items:itm,totalPayment:document.getElementById('posTotalPayment').innerText.replace(/\D/g,'')};
-            const sid=await api('saveSale',py); if(sid){ toast('Transaksi Sukses'); printReceipt(sid,py); resetPos(); refreshCacheProducts(); }
+            const sid=await api('saveSale',py); 
+            if(sid){ 
+                toast('Transaksi Sukses'); 
+                printReceipt(sid,py); 
+                resetPos(); 
+                
+                // Fetch new data to immediately reflect in background tabs like Laporan
+                await refreshApp();
+            }
         }
         function resetPos(){ document.getElementById('posTableBody').innerHTML=''; posRows=0; document.getElementById('posBuyer').value=''; document.getElementById('posDiscount').value='0'; addPosRow(); calculatePos(); }
         
@@ -698,8 +754,15 @@
             document.getElementById('print-disc').innerText=d.discount; 
             document.getElementById('print-total').innerText=formatRp(d.totalPayment); 
             
+            // Add specific mode class, window.print triggers dialog where it becomes PDF or prints to printer.
+            document.body.classList.add('print-struk-mode');
             document.getElementById('print-area').classList.add('active');
-            setTimeout(()=>{ window.print(); document.getElementById('print-area').classList.remove('active'); }, 500); 
+            
+            setTimeout(()=>{ 
+                window.print(); 
+                document.body.classList.remove('print-struk-mode');
+                document.getElementById('print-area').classList.remove('active'); 
+            }, 500); 
         }
 
         // STOCK & EXPENSE & REP
